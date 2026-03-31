@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: oomkilled-alerts
-  namespace: dev04        # ou ton namespace applicatif
+  namespace: dev05        # ou ton namespace applicatif
   labels:
     role: alert-rules
     # Si namespace applicatif, ces labels sont nécessaires pour que
