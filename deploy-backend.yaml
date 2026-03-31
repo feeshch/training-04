@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-backend
+  namespace: dev04
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: flask-app
+        image: docker.io/feeshchacademy/feesh:simple-backend-v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_APP
+          value: "app.py"
+        - name: FLASK_ENV
+          value: "development"
+        - name: DATABASE_PATH
+          value: "/app/data/database.db"
+        volumeMounts:
+        - name: backend-storage
+          mountPath: /app/data
+        resources:
+          requests:
+            memory: "5Mi"
+            cpu: "1"
+          limits:
+            memory: "10Mi"
+            cpu: "2"
+      volumes:
+      - name: backend-storage
+        persistentVolumeClaim:
+          claimName: backend-pvc

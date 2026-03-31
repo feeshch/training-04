@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: oomkilled-alerts
+  namespace: dev04        # ou ton namespace applicatif
+  labels:
+    role: alert-rules
+    # Si namespace applicatif, ces labels sont nécessaires pour que
+    # l'opérateur Prometheus les prenne en compte :
+    # openshift.io/prometheus-rule-evaluation-scope: leaf-prometheus
+spec:
+  groups:
+    - name: oom.rules
+      interval: 1m
+      rules:
+        - alert: ContainerOOMKilled
+          expr: |
+            kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Container OOMKilled détecté"
+            description: >
+              Le container {{ $labels.container }} du pod {{ $labels.pod }}
+              (namespace {{ $labels.namespace }}) a été tué par OOM.
